@@ -1,10 +1,10 @@
 import {
   ApolloClient,
   ApolloLink,
-  createHttpLink,
-  HttpLink
+  HttpLink,
+  InMemoryCache
 } from '@apollo/client'
-import { MultiAPILink } from '@habx/apollo-multi-endpoint-link/dist/typings/MultiAPILink'
+import result from '@generated/types'
 import consoleLog from '@lib/consoleLog'
 import jwtDecode from 'jwt-decode'
 
@@ -78,10 +78,10 @@ const authLink = new ApolloLink((operation, forward) => {
   }
 })
 
-// const client = new ApolloClient({
-//   link: authLink.concat(httpLink),
-//   cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
-// })
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
+})
 
 // const clientTheGraph = new ApolloClient({
 //   link: authLink.concat(httpLinkArbitrum),
@@ -95,15 +95,15 @@ const authLink = new ApolloLink((operation, forward) => {
 //  ),
 //    cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
 //  })
-const client = new ApolloClient({
-  link: ApolloLink.from([
-    new MultiAPILink({
-      endpoints: {
-        housings: 'https://housings.api',
-        projects: 'https://projects.api'
-      },
-      createHttpLink: () => createHttpLink()
-    })
-  ])
-})
+// const client = new ApolloClient({
+//   link: ApolloLink.from([
+//     new MultiAPILink({
+//       endpoints: {
+//         housings: 'https://housings.api',
+//         projects: 'https://projects.api'
+//       },
+//       createHttpLink: () => createHttpLink()
+//     })
+//   ])
+// })
 export default client
