@@ -26,6 +26,8 @@ export const STATIC_ASSETS = 'https://assets.lenster.xyz/images'
 export const API_URL = IS_MAINNET
   ? 'https://api-mumbai.lens.dev'
   : 'https://api-mumbai.lens.dev'
+export const API_URL_ARBITRUM =
+  'https://api.thegraph.com/subgraphs/name/nelsongaldeman/token-balances-arbitrum'
 export const POLYGONSCAN_URL = IS_MAINNET
   ? 'https://polygonscan.com'
   : 'https://mumbai.polygonscan.com'

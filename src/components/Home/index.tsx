@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import ExploreFeed from '@components/Explore/Feed'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import Announcement from '@components/Home/Announcement'
@@ -14,8 +15,30 @@ import SetDefaultProfile from './SetDefaultProfile'
 import SetProfile from './SetProfile'
 import Streak from './Streak'
 
+const test = gql`
+  {
+    accounts(first: 100) {
+      id
+      balances {
+        balance
+        token {
+          symbol
+          name
+        }
+      }
+    }
+  }
+`
+
 const Home: NextPage = () => {
   const { currentUser } = useContext(AppContext)
+
+  useQuery(test, {
+    context: { clientName: 'arbitrum' },
+    onCompleted(data) {
+      console.log(data)
+    }
+  })
 
   return (
     <>

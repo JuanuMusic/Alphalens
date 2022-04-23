@@ -81,7 +81,9 @@ const Feed: FC = () => {
       })
     }
   })
-
+  if (error) {
+    console.log(error)
+  }
   return (
     <>
       {currentUser && <NewPost refetch={refetch} />}

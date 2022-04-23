@@ -1,14 +1,14 @@
 import {
   ApolloClient,
   ApolloLink,
-  HttpLink,
-  InMemoryCache
+  createHttpLink,
+  HttpLink
 } from '@apollo/client'
-import result from '@generated/types'
+import { MultiAPILink } from '@habx/apollo-multi-endpoint-link/dist/typings/MultiAPILink'
 import consoleLog from '@lib/consoleLog'
 import jwtDecode from 'jwt-decode'
 
-import { API_URL, ERROR_MESSAGE } from './constants'
+import { API_URL, API_URL_ARBITRUM, ERROR_MESSAGE } from './constants'
 
 const REFRESH_AUTHENTICATION_MUTATION = `
   mutation Refresh($request: RefreshRequest!) {
@@ -22,6 +22,10 @@ const REFRESH_AUTHENTICATION_MUTATION = `
 const httpLink = new HttpLink({
   uri: API_URL,
   fetch
+})
+
+const httpLinkArbitrum = new HttpLink({
+  uri: API_URL_ARBITRUM
 })
 
 const authLink = new ApolloLink((operation, forward) => {
@@ -74,9 +78,32 @@ const authLink = new ApolloLink((operation, forward) => {
   }
 })
 
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
-})
+// const client = new ApolloClient({
+//   link: authLink.concat(httpLink),
+//   cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
+// })
 
+// const clientTheGraph = new ApolloClient({
+//   link: authLink.concat(httpLinkArbitrum),
+//   cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
+// })
+// const client = new ApolloClient({
+//    link: ApolloLink.split(
+//      operation => operation.getContext().clientName === 'arbitrum',
+//      httpLinkArbitrum, //if above
+//      httpLink
+//  ),
+//    cache: new InMemoryCache({ possibleTypes: result.possibleTypes })
+//  })
+const client = new ApolloClient({
+  link: ApolloLink.from([
+    new MultiAPILink({
+      endpoints: {
+        housings: 'https://housings.api',
+        projects: 'https://projects.api'
+      },
+      createHttpLink: () => createHttpLink()
+    })
+  ])
+})
 export default client
